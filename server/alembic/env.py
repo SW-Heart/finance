@@ -73,7 +73,9 @@ def run_migrations_online() -> None:
     # Override URL with env var if present
     db_url = os.getenv("DATABASE_URL")
     if db_url:
-        configuration["sqlalchemy.url"] = db_url
+        # Alembic uses sync driver (psycopg2) but app uses asyncpg.
+        # We need to swap the driver for migrations.
+        configuration["sqlalchemy.url"] = db_url.replace("postgresql+asyncpg://", "postgresql://")
 
     connectable = engine_from_config(
         configuration,
