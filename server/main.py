@@ -49,7 +49,10 @@ async def startup_event():
     from database import AsyncSessionLocal
     from services.assets import seed_default_assets
     async with AsyncSessionLocal() as db:
-        await seed_default_assets(db)
+        try:
+            await seed_default_assets(db)
+        except Exception as e:
+            print(f"Startup Warning: Could not seed default assets. This is normal if tables are not created yet. Error: {e}")
 
 
 if __name__ == "__main__":
