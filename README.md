@@ -1,22 +1,3 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
----
-
 # 部署文档
 
 本项目的部署完全基于 Docker 和 Docker Compose。
@@ -90,49 +71,35 @@ alembic upgrade head
 exit
 ```
 
-### 5.1 准备 Nginx 配置 (HTTP)
+### 5. 配置 Nginx 反向代理 (HTTPS)
 
-我们需要创建一个**专用目录**来验证证书，避开权限问题。
+推荐使用阿里云免费 SSL 证书（有效期1年，到期可免费续签）。
 
-```bash
-# 1. 创建专用验证目录
-mkdir -p /var/www/certbot
+#### 5.1 申请并下载证书
+1. 登录阿里云控制台，搜索“数字证书管理服务”。
+2. 进入“SSL 证书” -> “免费证书” -> “创建证书”。
+3. 填写二级域名 (如 `assects.aigcog.com`) 并提交申请。
+4. 签发后点击“下载”，选择 **Nginx** 格式。
+5. 解压下载的压缩包，获得 `.pem` (或 .crt) 和 `.key` 文件。
 
-# 2. 写入 Nginx 配置 (指定该目录为验证根目录)
-cat > /etc/nginx/conf.d/finance.conf << 'EOF'
-server {
-    listen 80;
-    server_name assects.aigcog.com;
+#### 5.2 部署证书到服务器
 
-    # 专用验证通道
-    location ^~ /.well-known/acme-challenge/ {
-        default_type "text/plain";
-        root /var/www/certbot;
-    }
-
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-EOF
-
-# 3. 重载配置
-nginx -t && nginx -s reload
-```
-
-### 5.2 运行 Certbot (Webroot 模式)
-现在我们明确告诉 Certbot 把验证文件写到那个专用目录里：
+**注意：** 请使用编辑器 (`vi`) 粘贴内容，不要直接 cat，防止格式错乱。
 
 ```bash
-certbot certonly --webroot -w /var/www/certbot -d assects.aigcog.com
+# 1. 创建目录
+mkdir -p /etc/nginx/cert
+
+# 2. 写入公钥 (PEM)
+vi /etc/nginx/cert/finance.pem
+# 按 i 进入编辑模式 -> 粘贴 .pem 文件内容 -> 按 Esc -> 输入 :wq 保存
+
+# 3. 写入私钥 (KEY)
+vi /etc/nginx/cert/finance.key
+# 按 i 进入编辑模式 -> 粘贴 .key 文件内容 -> 按 Esc -> 输入 :wq 保存
 ```
 
-### 5.3 开启 HTTPS
-证书申请成功后（会提示 Congratulations），我们需要再次修改配置开启 HTTPS：
+#### 5.3 配置 Nginx
 
 ```bash
 cat > /etc/nginx/conf.d/finance.conf << 'EOF'
@@ -146,9 +113,9 @@ server {
     listen 443 ssl;
     server_name assects.aigcog.com;
 
-    # === Certbot 证书路径 (通常是这个路径，请检查) ===
-    ssl_certificate /etc/letsencrypt/live/assects.aigcog.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/assects.aigcog.com/privkey.pem;
+    # === 证书路径 ===
+    ssl_certificate /etc/nginx/cert/finance.pem;
+    ssl_certificate_key /etc/nginx/cert/finance.key;
 
     ssl_session_timeout 5m;
     ssl_protocols TLSv1.2 TLSv1.3;
