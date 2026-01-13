@@ -1,0 +1,48 @@
+.waterfall-container {
+    width: 100%;
+    padding: var(--space-md) 0;
+}
+
+.waterfall-tooltip {
+    background: rgba(13, 13, 13, 0.95);
+    border: var(--border-gold);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    box-shadow: var(--shadow-gold);
+}
+
+.waterfall-tooltip-name {
+    color: var(--color-platinum);
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
+
+.waterfall-tooltip-value {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.waterfall-tooltip-value.positive {
+    color: var(--color-positive);
+}
+
+.waterfall-tooltip-value.negative {
+    color: var(--color-negative-muted);
+}
+
+.waterfall-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--color-muted);
+    text-align: center;
+}
+
+.waterfall-empty-hint {
+    font-size: 0.75rem;
+    margin-top: var(--space-sm);
+    opacity: 0.6;
+}

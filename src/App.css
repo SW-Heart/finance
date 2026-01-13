@@ -1,0 +1,19 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  background-color: var(--color-void-black);
+}
+
+.app-main {
+  flex: 1;
+  margin-left: 200px;
+  min-height: 100vh;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .app-main {
+    margin-left: 0;
+    padding-bottom: 70px;
+  }
+}

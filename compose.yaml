@@ -1,0 +1,22 @@
+services:
+  finance-db:
+    image: postgres:15-alpine
+    container_name: finance-vault-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: finance_vault
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    restart: always
+
+  # Optional: pgAdmin for easier DB management
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   ports:
+  #     - "8080:80"
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: admin

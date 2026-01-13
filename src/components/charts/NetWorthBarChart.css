@@ -1,0 +1,100 @@
+.networth-bar-container {
+    width: 100%;
+    position: relative;
+}
+
+.networth-bar-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: var(--text-muted);
+}
+
+.networth-bar-empty p {
+    margin: 0;
+}
+
+.networth-bar-empty-hint {
+    font-size: 0.85rem;
+    margin-top: var(--space-sm) !important;
+}
+
+/* 图例样式 */
+.bar-chart-legend {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-md);
+    padding-right: var(--space-md);
+}
+
+.bar-legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.bar-legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.bar-legend-color.k-up {
+    background: #10B981;
+}
+
+.bar-legend-color.k-down {
+    background: #EF4444;
+}
+
+.bar-legend-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Tooltip 样式 */
+.bar-tooltip {
+    background: #1E293B;
+    border-radius: 12px;
+    padding: 0;
+    min-width: 180px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bar-tooltip-header {
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bar-tooltip-body {
+    padding: 12px 16px;
+}
+
+.bar-tooltip-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 0;
+}
+
+.bar-tooltip-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.bar-tooltip-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    font-family: var(--font-number);
+}

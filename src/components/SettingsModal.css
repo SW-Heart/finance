@@ -1,0 +1,351 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.settings-modal-classic {
+    background: var(--bg-secondary);
+    width: 100%;
+    max-width: 800px;
+    height: 540px;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    display: flex;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    animation: modalPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    /* 核心：为内部绝对定位按钮提供参考 */
+}
+
+/* Sidebar Styling */
+.modal-sidebar {
+    width: 220px;
+    background: var(--bg-tertiary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: var(--space-xl) var(--space-lg);
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.sidebar-header p {
+    margin: 4px 0 0;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar-menu {
+    flex: 1;
+    padding: 0 var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    text-align: left;
+    width: calc(100% - 16px);
+    margin: 0 8px;
+}
+
+.menu-item:hover {
+    background: rgba(var(--brand-primary-rgb), 0.05);
+    color: var(--brand-primary);
+}
+
+.menu-item.active {
+    background: var(--brand-primary);
+    color: white;
+}
+
+.menu-item .arrow {
+    margin-left: auto;
+    opacity: 0.5;
+}
+
+.menu-item.active .arrow {
+    opacity: 1;
+}
+
+.sidebar-footer {
+    padding: var(--space-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.sidebar-logout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid #fee2e2;
+    border-radius: var(--radius-md);
+    color: #ef4444;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sidebar-logout:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
+/* Main Content Area */
+.modal-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    overflow: hidden;
+}
+
+.main-header {
+    padding: var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 64px;
+}
+
+.main-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modal-close-floating {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+    padding: 0;
+}
+
+.modal-close-floating:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+    transform: rotate(90deg);
+}
+
+.main-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-xl);
+}
+
+.tab-pane {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Tab Content Styling */
+.info-group {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.info-item-classic {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.info-item-classic:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.info-value {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+/* Security Content */
+.security-card-classic {
+    text-align: center;
+    padding: var(--space-md) 0;
+}
+
+.shield-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.security-card-classic h4 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.security-card-classic p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    max-width: 320px;
+    margin: 0 auto 20px;
+}
+
+.security-tips {
+    text-align: left;
+    background: var(--bg-tertiary);
+    padding: 16px;
+    border-radius: var(--radius-lg);
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+/* About Content */
+.about-pane {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.app-logo-large {
+    width: 56px;
+    height: 56px;
+    background: var(--brand-primary);
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.app-info-classic h4 {
+    margin: 0 0 4px;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.version {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    max-width: 280px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalPop {
+    from {
+        transform: scale(0.98) translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .settings-modal-classic {
+        flex-direction: column;
+        height: auto;
+        max-height: 90vh;
+        width: 90vw;
+    }
+
+    .modal-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 8px;
+    }
+
+    .menu-item {
+        width: auto;
+        margin: 0 4px;
+        flex-shrink: 0;
+    }
+}

@@ -1,0 +1,44 @@
+.trend-chart-container {
+    width: 100%;
+}
+
+.trend-chart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+    color: var(--text-muted);
+}
+
+.trend-chart-empty p {
+    margin: 0;
+}
+
+.trend-chart-empty-hint {
+    font-size: 0.85rem;
+    margin-top: var(--space-sm) !important;
+}
+
+/* Tooltip 样式 */
+.trend-tooltip {
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 10px;
+    padding: 10px 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.trend-tooltip-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 4px 0;
+}
+
+.trend-tooltip-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+    font-family: var(--font-mono);
+}
