@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useBlocker, useNavigate } from 'react-router-dom';
 import { format, parse } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
@@ -46,6 +46,7 @@ const Ledger = () => {
     const [lastLoadedMonth, setLastLoadedMonth] = useState(null); // Track loaded month to prevent overwrite
     const [expandedCategories, setExpandedCategories] = useState({});
     const [saveStatus, setSaveStatus] = useState('idle'); // idle, saving, saved, error
+    const justSavedRef = useRef(false); // 标记是否刚刚保存完成，防止循环触发
 
     const [showImport, setShowImport] = useState(false);
 
@@ -112,27 +113,16 @@ const Ledger = () => {
 
     // Auto-save logic
     useEffect(() => {
-        // Don't auto-save on initial load or empty data implies just loaded
-        // We need to track if user has modified anything?
-        // 'isDirty' logic can helper here, but we want to debounce 'formData' changes.
-
         // Skip if month hasn't been loaded yet, or if we're in the middle of a month switch
-        // This is critical to prevent saving stale data to the wrong month
         if (!lastLoadedMonth || lastLoadedMonth !== currentMonth) return;
 
+        // 如果刚刚保存完成，跳过这次检查（防止 records 刷新后立即再次触发）
+        if (justSavedRef.current) {
+            justSavedRef.current = false;
+            return;
+        }
+
         const timer = setTimeout(async () => {
-            // Find changes compared to server records?
-            // Actually, we can just save everything or dirty check.
-            // isDirty calculates based on current 'records'.
-            // If records haven't updated yet (optimistic), isDirty might be persist.
-
-            // Simpler: Just save formData if it's different from what we last saved?
-            // Or rely on isDirty.
-
-            // Let's rely on isDirty check inside the effect?
-            // But isDirty is memoized.
-            // We need to avoid saving immediately on load.
-
             // Check if there are changes to save
             const serverMap = {};
             records.forEach(r => serverMap[r.assetId] = Number(r.amount));
@@ -149,11 +139,13 @@ const Ledger = () => {
             if (hasChanges) {
                 setSaveStatus('saving');
                 try {
+                    justSavedRef.current = true; // 标记即将保存，防止 records 刷新后循环触发
                     await saveRecords(formData);
                     setSaveStatus('saved');
                     setTimeout(() => setSaveStatus('idle'), 2000);
                 } catch (err) {
                     console.error("Auto-save failed", err);
+                    justSavedRef.current = false; // 保存失败时重置
                     setSaveStatus('error');
                 }
             }
