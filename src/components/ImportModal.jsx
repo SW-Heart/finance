@@ -2,6 +2,9 @@ import React, { useState, useRef } from 'react';
 import { Upload, X, FileSpreadsheet, Loader, BrainCircuit, Clipboard, Trash2, FileText } from 'lucide-react';
 import './ImportModal.css';
 
+// 使用环境变量配置 API 地址
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+
 const CATEGORY_MAP = {
     'liquid': '流动性资产',
     'safe': '稳健型资产',
@@ -64,7 +67,7 @@ const ImportModal = ({ isOpen, onClose, onImport }) => {
         formData.append('use_ai', String(useAI));
 
         try {
-            const res = await fetch('http://localhost:3001/api/import/upload', {
+            const res = await fetch(`${API_BASE_URL}/import/upload`, {
                 method: 'POST',
                 body: formData
             });
@@ -85,7 +88,7 @@ const ImportModal = ({ isOpen, onClose, onImport }) => {
         setError(null);
 
         try {
-            const res = await fetch('http://localhost:3001/api/import/paste', {
+            const res = await fetch(`${API_BASE_URL}/import/paste`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: textInput, use_ai: useAI })

@@ -86,11 +86,21 @@ const Ledger = () => {
         }
     }, [groupedAssets]);
 
+    // 立即响应月份切换，防止旧数据被自动保存到新月份
+    useEffect(() => {
+        // 当月份变化时，立即将 lastLoadedMonth 设置为 null 并清空 formData
+        // 这可以阻止自动保存在新数据加载前触发
+        if (currentMonth !== lastLoadedMonth && lastLoadedMonth !== null) {
+            setFormData({});
+            setLastLoadedMonth(null); // 标记为"正在切换月份"状态
+        }
+    }, [currentMonth, lastLoadedMonth]);
+
     // 初始化表单数据
     useEffect(() => {
-        // Only update formData if the month changed relative to what we last loaded.
-        // This prevents overwriting user input when 'records' updates due to a save operation.
-        if (currentMonth !== lastLoadedMonth && !recordsLoading) {
+        // Only update formData if month change is pending (lastLoadedMonth is null) 
+        // and records have finished loading
+        if (lastLoadedMonth === null && !recordsLoading) {
             const initialData = {};
             records.forEach(r => {
                 initialData[r.assetId] = r.amount;
@@ -106,8 +116,9 @@ const Ledger = () => {
         // We need to track if user has modified anything?
         // 'isDirty' logic can helper here, but we want to debounce 'formData' changes.
 
-        // Skip initial
-        if (!lastLoadedMonth) return;
+        // Skip if month hasn't been loaded yet, or if we're in the middle of a month switch
+        // This is critical to prevent saving stale data to the wrong month
+        if (!lastLoadedMonth || lastLoadedMonth !== currentMonth) return;
 
         const timer = setTimeout(async () => {
             // Find changes compared to server records?
@@ -149,7 +160,7 @@ const Ledger = () => {
         }, 1000); // 1s Debounce
 
         return () => clearTimeout(timer);
-    }, [formData, records, saveRecords, lastLoadedMonth]);
+    }, [formData, records, saveRecords, lastLoadedMonth, currentMonth]);
 
     // Calculate Totals
     const totals = useMemo(() => {
