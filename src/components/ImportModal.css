@@ -354,3 +354,24 @@
     -webkit-appearance: none;
     cursor: pointer;
 }
+
+/* Delete Row Button */
+.delete-row-btn {
+    padding: 4px 8px !important;
+    border-radius: 6px;
+    opacity: 0.5;
+    color: inherit;
+    transition: all 0.2s;
+}
+
+.delete-row-btn:hover {
+    opacity: 1;
+    background: rgba(255, 59, 48, 0.1);
+    color: #ff3b30;
+}
+
+.btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

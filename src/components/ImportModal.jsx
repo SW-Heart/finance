@@ -158,6 +158,10 @@ const ImportModal = ({ isOpen, onClose, onImport }) => {
         setPreviewData(newData);
     };
 
+    const handleDeleteRow = (index) => {
+        setPreviewData(prev => prev.filter((_, i) => i !== index));
+    };
+
     return (
         <div className="import-modal-overlay">
             <div className="import-modal">
@@ -256,9 +260,10 @@ const ImportModal = ({ isOpen, onClose, onImport }) => {
                             <table className="preview-table">
                                 <thead>
                                     <tr>
-                                        <th style={{ width: '40%' }}>资产名称</th>
-                                        <th style={{ width: '30%' }}>金额</th>
-                                        <th style={{ width: '30%' }}>类别</th>
+                                        <th style={{ width: '35%' }}>资产名称</th>
+                                        <th style={{ width: '25%' }}>金额</th>
+                                        <th style={{ width: '28%' }}>类别</th>
+                                        <th style={{ width: '12%' }}>操作</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -291,6 +296,15 @@ const ImportModal = ({ isOpen, onClose, onImport }) => {
                                                         <option key={key} value={key}>{label}</option>
                                                     ))}
                                                 </select>
+                                            </td>
+                                            <td>
+                                                <button
+                                                    className="btn btn-ghost btn-icon delete-row-btn"
+                                                    onClick={() => handleDeleteRow(idx)}
+                                                    title="删除此行"
+                                                >
+                                                    <X size={16} />
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}

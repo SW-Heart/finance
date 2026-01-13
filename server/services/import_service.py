@@ -247,10 +247,19 @@ async def ai_parse(df: pd.DataFrame, api_key: str):
     csv_preview = df.head(50).to_csv(index=False)
     
     prompt = f"""
-    You are a data parser helper. Extract financial asset data from the following CSV content.
+    You are a financial data parser. Extract asset data from the following CSV content.
     Return a JSON object with a key 'assets' containing a list of objects.
-    Each object must have: 'name' (string), 'amount' (number), and 'category' (string, optional).
-    Try to infer the category from the name (e.g. 'Cash', 'Stock', 'Crypto', 'Liability').
+    Each object must have: 'name' (string), 'amount' (number), and 'category' (string).
+    
+    For category, you MUST use one of these exact values based on the asset name:
+    - "liquid": 流动性资产 (e.g., 现金, 活期存款, 货币基金, 余额宝, 微信零钱, 支付宝余额)
+    - "safe": 稳健型资产 (e.g., 定期存款, 国债, 银行理财, 保本理财, 储蓄险)
+    - "equity": 权益类资产 (e.g., 股票, 基金, ETF, 指数基金, A股, 港股, 美股)
+    - "risk": 风险资产 (e.g., 比特币, BTC, ETH, 加密货币, 虚拟币, NFT, 期权, 期货)
+    - "other": 其他资产 (e.g., 房产, 汽车, 黄金, 收藏品, 应收账款, or anything not fitting above)
+    - "liability": 负债 (e.g., 房贷, 车贷, 花呗, 白条, 信用卡欠款, 借款, 贷款)
+    
+    Intelligently infer the category from the asset name. If uncertain, use "other".
     
     CSV Content:
     {csv_preview}

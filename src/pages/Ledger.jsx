@@ -254,7 +254,8 @@ const Ledger = () => {
     const toggleCategory = (categoryId) => {
         setExpandedCategories(prev => ({
             ...prev,
-            [categoryId]: !prev[categoryId]
+            // 如果当前值是 undefined（未设置），视为 true（展开状态），切换后变为 false
+            [categoryId]: prev[categoryId] === undefined ? false : !prev[categoryId]
         }));
     };
 
