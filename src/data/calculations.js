@@ -218,10 +218,11 @@ export const getCategoryStats = (assetTypes, currentRecords, previousRecords) =>
  * @param {Array} assetTypes 资产类型
  * @param {number} months 显示最近多少个月
  */
-export const calculateHistoricalTrend = (allRecords, assetTypes, months = 12) => {
+export const calculateHistoricalTrend = (allRecords, assetTypes, months = null) => {
     // 获取所有有记录的月份
     const allMonths = [...new Set(allRecords.map(r => r.date))].sort();
-    const recentMonths = allMonths.slice(-months);
+    // 如果指定了月份数量则取最近 N 个月，否则显示全部数据
+    const recentMonths = months ? allMonths.slice(-months) : allMonths;
 
     return recentMonths.map(date => {
         // 筛选当月记录

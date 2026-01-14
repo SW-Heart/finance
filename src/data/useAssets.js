@@ -235,7 +235,7 @@ export const useMonthlyRecords = (initialMonth = getCurrentMonth()) => {
 };
 
 // ============ 统计数据 Hook ============
-export const useStats = (month = getCurrentMonth()) => {
+export const useStats = () => {
     const { user } = useAuth();
     const userId = user?.id;
 
@@ -263,15 +263,20 @@ export const useStats = (month = getCurrentMonth()) => {
                 api.getMonthlyRecords(userId) // Fetch all
             ]);
 
-            const currentRecords = allRecords.filter(r => r.date === month);
-            const previousMonth = getPreviousMonth(month);
+            // 获取所有有记录的月份，使用最新有数据的月份作为当前月份
+            const allMonths = [...new Set(allRecords.map(r => r.date))].sort();
+            const latestMonth = allMonths.length > 0 ? allMonths[allMonths.length - 1] : getCurrentMonth();
+
+            const currentRecords = allRecords.filter(r => r.date === latestMonth);
+            const previousMonth = getPreviousMonth(latestMonth);
             const previousRecords = allRecords.filter(r => r.date === previousMonth);
 
-            const monthlyStats = calculateMonthlyStats(types, currentRecords, previousRecords, month);
+            const monthlyStats = calculateMonthlyStats(types, currentRecords, previousRecords, latestMonth);
             const allAssetStats = getAllAssetStats(types, currentRecords, previousRecords);
             const catStats = getCategoryStats(types, currentRecords, previousRecords);
-            const historicalTrend = calculateHistoricalTrend(allRecords, types, 12);
-            const waterfallData = getWaterfallData(types, currentRecords, previousRecords, month);
+            // 显示全部历史数据，不限制12个月
+            const historicalTrend = calculateHistoricalTrend(allRecords, types);
+            const waterfallData = getWaterfallData(types, currentRecords, previousRecords, latestMonth);
 
             setStats(monthlyStats);
             setAssetStats(allAssetStats);
@@ -283,7 +288,7 @@ export const useStats = (month = getCurrentMonth()) => {
         } finally {
             setLoading(false);
         }
-    }, [userId, month]);
+    }, [userId]);
 
     useEffect(() => {
         loadStats();
