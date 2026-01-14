@@ -168,8 +168,8 @@ export const NetWorthBarChart = ({ data = [], height = 350, showValue = true }) 
     }
 
     // 处理数据为K线格式
-    // Open: 上个月netWorth (如果是第一条数据，Open=Close，或者Open=0? 通常设为Close以显示十字星，这里设为与Close相同)
-    // Close: 本月netWorth
+    // Open: 上个月totalAssets (如果是第一条数据，Open=0)
+    // Close: 本月totalAssets
     // High = Max(Open, Close)
     // Low = Min(Open, Close)
 
@@ -178,11 +178,11 @@ export const NetWorthBarChart = ({ data = [], height = 350, showValue = true }) 
         const prevItem = index > 0 ? data[index - 1] : null;
         // 使用 totalAssets（总资产）
         const close = item.totalAssets || 0;
-        // 如果是第一条，假设Open=Close (或者之前的初始资金，这里暂用Close)
-        const open = prevItem ? (prevItem.totalAssets || 0) : close;
+        // 如果是第一条，open 设为 0（表示从零开始）
+        const open = prevItem ? (prevItem.totalAssets || 0) : 0;
 
         const netGrowth = close - open;
-        const growthPercent = open !== 0 ? netGrowth / open : 0;
+        const growthPercent = open !== 0 ? netGrowth / open : (close > 0 ? 1 : 0);
 
         // 构造 Range Bar 数据: [min, max]
         const min = Math.min(open, close);
@@ -194,6 +194,7 @@ export const NetWorthBarChart = ({ data = [], height = 350, showValue = true }) 
 
         return {
             ...item,
+            index, // 添加唯一索引
             label: formatDate(item.date),
             open,
             close,
@@ -222,10 +223,11 @@ export const NetWorthBarChart = ({ data = [], height = 350, showValue = true }) 
                     margin={{ top: 20, right: 20, left: 10, bottom: 20 }}
                 >
                     <XAxis
-                        dataKey="label"
+                        dataKey="index"
                         axisLine={false}
                         tickLine={false}
                         tick={{ fill: '#64748B', fontSize: 11 }}
+                        tickFormatter={(index) => chartData[index]?.label || ''}
                     />
                     <YAxis
                         domain={[Math.max(0, minVal - padding), maxVal + padding]}
