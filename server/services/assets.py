@@ -29,6 +29,27 @@ async def get_all_asset_types(db: AsyncSession, user_id: str):
         for t in all_types
     ]
 
+
+async def get_all_asset_types_including_deleted(db: AsyncSession, user_id: str):
+    """获取所有资产类型（包括已删除的），用于历史数据计算"""
+    result = await db.execute(select(AssetType).where(
+        (AssetType.user_id == user_id) | (AssetType.user_id == None)
+    ))
+    all_types = result.scalars().all()
+    
+    return [
+        {
+            "id": t.id,
+            "name": t.name,
+            "category": t.category,
+            "parentCategory": t.parent_category,
+            "icon": t.icon,
+            "isCustom": t.is_custom,
+            "isDeleted": t.is_deleted
+        }
+        for t in all_types
+    ]
+
 async def create_custom_asset_type(db: AsyncSession, user_id: str, data: dict):
     # Allow passing ID from frontend if generated there, or generate here.
     # Model uses String ID.
@@ -169,6 +190,19 @@ async def delete_monthly_records(db: AsyncSession, user_id: str, month: str):
     from sqlalchemy import delete
     stmt = delete(MonthlyRecord).where(
         (MonthlyRecord.user_id == user_id) &
+        (MonthlyRecord.record_date == month)
+    )
+    result = await db.execute(stmt)
+    await db.commit()
+    return result.rowcount
+
+
+async def delete_single_record(db: AsyncSession, user_id: str, asset_id: str, month: str):
+    """删除用户指定月份某个资产的记录"""
+    from sqlalchemy import delete
+    stmt = delete(MonthlyRecord).where(
+        (MonthlyRecord.user_id == user_id) &
+        (MonthlyRecord.asset_id == asset_id) &
         (MonthlyRecord.record_date == month)
     )
     result = await db.execute(stmt)

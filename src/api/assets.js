@@ -11,6 +11,16 @@ export const getAssetTypes = async (userId) => {
 };
 
 /**
+ * 获取所有资产类型（包括已删除的），用于历史趋势计算
+ * @param {string} userId
+ */
+export const getAllAssetTypesIncludingDeleted = async (userId) => {
+    const response = await fetch(`${API_BASE_URL}/types/all?user_id=${userId}`);
+    if (!response.ok) throw new Error('Failed to fetch all asset types');
+    return response.json();
+};
+
+/**
  * Create a custom asset type
  * @param {string} userId
  * @param {object} typeData
@@ -109,5 +119,19 @@ export const deleteMonthlyRecords = async (userId, month) => {
         method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete monthly records');
+    return response.json();
+};
+
+/**
+ * 删除指定月份某个资产的记录
+ * @param {string} userId
+ * @param {string} assetId
+ * @param {string} month - 格式: yyyy-MM
+ */
+export const deleteSingleRecord = async (userId, assetId, month) => {
+    const response = await fetch(`${API_BASE_URL}/records/${assetId}/${month}?user_id=${userId}`, {
+        method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to delete record');
     return response.json();
 };

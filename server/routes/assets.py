@@ -33,6 +33,12 @@ async def get_types(user_id: str, db: AsyncSession = Depends(get_db)):
     # Let's assume the frontend passes user_id for now.
     return await assets.get_all_asset_types(db, user_id)
 
+
+@router.get("/types/all")
+async def get_all_types_including_deleted(user_id: str, db: AsyncSession = Depends(get_db)):
+    """获取所有资产类型（包括已删除的），用于历史数据计算"""
+    return await assets.get_all_asset_types_including_deleted(db, user_id)
+
 @router.post("/types")
 async def create_type(user_id: str, type_data: AssetTypeCreate, db: AsyncSession = Depends(get_db)):
     return await assets.create_custom_asset_type(db, user_id, type_data.dict())
@@ -90,4 +96,11 @@ async def batch_upsert(user_id: str, records: List[MonthlyRecordCreate], db: Asy
 async def delete_month_records(user_id: str, month: str, db: AsyncSession = Depends(get_db)):
     """删除指定月份的所有记录（重置当月数据）"""
     deleted_count = await assets.delete_monthly_records(db, user_id, month)
+    return {"success": True, "deleted": deleted_count}
+
+
+@router.delete("/records/{asset_id}/{month}")
+async def delete_single_record(user_id: str, asset_id: str, month: str, db: AsyncSession = Depends(get_db)):
+    """删除指定月份某个资产的记录"""
+    deleted_count = await assets.delete_single_record(db, user_id, asset_id, month)
     return {"success": True, "deleted": deleted_count}

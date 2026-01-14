@@ -168,14 +168,15 @@ export const NetWorthBarChart = ({ data = [], height = 350, showValue = true }) 
     }
 
     // 处理数据为K线格式
-    // Open: 上个月TotalAssets (如果是第一条数据，Open=Close，或者Open=0? 通常设为Close以显示十字星，这里设为与Close相同)
-    // Close: 本月TotalAssets
+    // Open: 上个月netWorth (如果是第一条数据，Open=Close，或者Open=0? 通常设为Close以显示十字星，这里设为与Close相同)
+    // Close: 本月netWorth
     // High = Max(Open, Close)
     // Low = Min(Open, Close)
 
     // 显示全部历史数据，不再slice
     const chartData = data.map((item, index) => {
         const prevItem = index > 0 ? data[index - 1] : null;
+        // 使用 totalAssets（总资产）
         const close = item.totalAssets || 0;
         // 如果是第一条，假设Open=Close (或者之前的初始资金，这里暂用Close)
         const open = prevItem ? (prevItem.totalAssets || 0) : close;

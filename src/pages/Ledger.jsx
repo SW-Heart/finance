@@ -37,6 +37,7 @@ const Ledger = () => {
         saveRecords,
         copyFromLastMonth,
         resetMonth,
+        deleteRecord,
         loading: recordsLoading,
         goToPreviousMonth,
         goToNextMonth
@@ -424,13 +425,20 @@ const Ledger = () => {
 
     const handleDelete = (id, name) => {
         setConfirmConfig({
-            title: '确认删除资产',
-            message: `您确定要删除资产 "${name}" 吗？此操作将同时删除该资产的所有历史记录，且无法恢复。`,
+            title: '确认删除当月记录',
+            message: `确定要删除 "${name}" 在 ${formatMonthDisplay(currentMonth)} 的记录吗？此操作只影响当前月份。`,
             type: 'danger',
             confirmText: '确认删除',
             onConfirm: async () => {
                 try {
-                    await removeType(id);
+                    // 调用 API 删除当月该资产的记录
+                    await deleteRecord(id);
+                    // 从本地 formData 中移除
+                    setFormData(prev => {
+                        const newData = { ...prev };
+                        delete newData[id];
+                        return newData;
+                    });
                 } catch (err) {
                     console.error("Delete failed", err);
                 }

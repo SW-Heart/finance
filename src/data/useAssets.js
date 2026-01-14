@@ -231,6 +231,18 @@ export const useMonthlyRecords = (initialMonth = getCurrentMonth()) => {
         }
     }, [userId, currentMonth, loadRecords]);
 
+    // 删除当月某个资产的记录
+    const deleteRecord = useCallback(async (assetId) => {
+        if (!userId) return;
+        try {
+            await api.deleteSingleRecord(userId, assetId, currentMonth);
+            await loadRecords(); // 重新加载数据
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
+    }, [userId, currentMonth, loadRecords]);
+
     return {
         currentMonth,
         setCurrentMonth,
@@ -240,6 +252,7 @@ export const useMonthlyRecords = (initialMonth = getCurrentMonth()) => {
         saveRecords,
         copyFromLastMonth,
         resetMonth,
+        deleteRecord,
         recordedMonths,
         refresh: loadRecords,
         goToNextMonth: () => setCurrentMonth(getNextMonth(currentMonth)),
@@ -271,8 +284,10 @@ export const useStats = () => {
             // Fetch necessary data
             // We need AssetTypes and All Records (for trend) or at least Current + Previous month.
             // Optimized: Fetch AssetTypes and All Records in parallel.
-            const [types, allRecords] = await Promise.all([
+            // 同时获取包含已删除资产的列表，用于历史趋势计算
+            const [types, allTypesIncludingDeleted, allRecords] = await Promise.all([
                 api.getAssetTypes(userId),
+                api.getAllAssetTypesIncludingDeleted(userId),
                 api.getMonthlyRecords(userId) // Fetch all
             ]);
 
@@ -287,8 +302,8 @@ export const useStats = () => {
             const monthlyStats = calculateMonthlyStats(types, currentRecords, previousRecords, latestMonth);
             const allAssetStats = getAllAssetStats(types, currentRecords, previousRecords);
             const catStats = getCategoryStats(types, currentRecords, previousRecords);
-            // 显示全部历史数据，不限制12个月
-            const historicalTrend = calculateHistoricalTrend(allRecords, types);
+            // 使用包含已删除资产的列表计算历史趋势，确保历史数据完整
+            const historicalTrend = calculateHistoricalTrend(allRecords, allTypesIncludingDeleted);
             const waterfallData = getWaterfallData(types, currentRecords, previousRecords, latestMonth);
 
             setStats(monthlyStats);

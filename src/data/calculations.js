@@ -224,18 +224,38 @@ export const calculateHistoricalTrend = (allRecords, assetTypes, months = null) 
     // 如果指定了月份数量则取最近 N 个月，否则显示全部数据
     const recentMonths = months ? allMonths.slice(-months) : allMonths;
 
+    // 创建 assetType 的映射，用于判断资产/负债
+    // 注意：已删除的资产可能不在当前 assetTypes 中，需要从记录中推断
+    const assetTypeMap = new Map(assetTypes.map(t => [t.id, t]));
+
     return recentMonths.map(date => {
         // 筛选当月记录
         const currentRecords = allRecords.filter(r => r.date === date);
-        const previousMonthDate = getPreviousMonth(date);
-        const previousRecords = allRecords.filter(r => r.date === previousMonthDate);
 
-        const stats = calculateMonthlyStats(assetTypes, currentRecords, previousRecords, date);
+        // 直接从记录计算，而不是遍历 assetTypes
+        let totalAssets = 0;
+        let totalLiabilities = 0;
+
+        currentRecords.forEach(record => {
+            const assetType = assetTypeMap.get(record.assetId);
+            // 如果资产类型不存在（可能已删除），尝试从记录中的其他信息推断
+            // 如果无法推断，默认当作资产处理
+            const isLiability = assetType?.parentCategory === 'liabilities';
+
+            if (isLiability) {
+                totalLiabilities += record.amount || 0;
+            } else {
+                totalAssets += record.amount || 0;
+            }
+        });
+
+        const netWorth = totalAssets - totalLiabilities;
+
         return {
             date,
-            netWorth: stats.netWorth,
-            totalAssets: stats.totalAssets,
-            totalLiabilities: stats.totalLiabilities,
+            netWorth,
+            totalAssets,
+            totalLiabilities,
         };
     });
 };
