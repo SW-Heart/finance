@@ -98,3 +98,16 @@ export const batchUpsertRecords = async (userId, records) => {
     if (!response.ok) throw new Error('Failed to batch save records');
     return response.json();
 };
+
+/**
+ * 删除指定月份的所有记录（重置当月数据）
+ * @param {string} userId
+ * @param {string} month - 格式: yyyy-MM
+ */
+export const deleteMonthlyRecords = async (userId, month) => {
+    const response = await fetch(`${API_BASE_URL}/records/month/${month}?user_id=${userId}`, {
+        method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to delete monthly records');
+    return response.json();
+};

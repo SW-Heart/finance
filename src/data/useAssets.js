@@ -219,6 +219,18 @@ export const useMonthlyRecords = (initialMonth = getCurrentMonth()) => {
         // Trigger this less frequently? Or when records change?
     }, [userId, records]); // Refresh when records update (save performed)
 
+    // 重置当月数据（删除当月所有记录）
+    const resetMonth = useCallback(async () => {
+        if (!userId) return;
+        try {
+            await api.deleteMonthlyRecords(userId, currentMonth);
+            await loadRecords(); // 重新加载数据
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
+    }, [userId, currentMonth, loadRecords]);
+
     return {
         currentMonth,
         setCurrentMonth,
@@ -227,6 +239,7 @@ export const useMonthlyRecords = (initialMonth = getCurrentMonth()) => {
         error,
         saveRecords,
         copyFromLastMonth,
+        resetMonth,
         recordedMonths,
         refresh: loadRecords,
         goToNextMonth: () => setCurrentMonth(getNextMonth(currentMonth)),

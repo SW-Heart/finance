@@ -10,7 +10,7 @@ import {
     Calendar,
     ChevronLeft,
     ChevronRight,
-
+    RotateCcw,
     Trash2,
     X,
     UploadCloud
@@ -36,6 +36,7 @@ const Ledger = () => {
         records,
         saveRecords,
         copyFromLastMonth,
+        resetMonth,
         loading: recordsLoading,
         goToPreviousMonth,
         goToNextMonth
@@ -265,6 +266,36 @@ const Ledger = () => {
             console.error("Copy failed", err);
         }
     }, [copyFromLastMonth]);
+
+    const handleResetMonth = useCallback(() => {
+        setConfirmConfig({
+            title: '确认重置当月数据',
+            message: `确定要清空 ${formatMonthDisplay(currentMonth)} 的所有资产记录吗？此操作将删除当月所有已填写的数据，且无法恢复。`,
+            type: 'danger',
+            confirmText: '确认重置',
+            cancelText: '取消',
+            onConfirm: async () => {
+                try {
+                    await resetMonth();
+                    setFormData({}); // 清空本地表单数据
+                    setConfirmConfig({
+                        title: '重置成功',
+                        message: `${formatMonthDisplay(currentMonth)} 的数据已清空。`,
+                        type: 'success',
+                        confirmText: '我知道了'
+                    });
+                } catch (err) {
+                    console.error("Reset failed", err);
+                    setConfirmConfig({
+                        title: '重置失败',
+                        message: '操作失败，请稍后重试。',
+                        type: 'danger',
+                        confirmText: '关闭'
+                    });
+                }
+            }
+        });
+    }, [currentMonth, resetMonth]);
 
     // Manual save removed, logic integrated into auto-save
     // Keep handleSave for 'Enter' key or similar if needed, or remove.
@@ -644,6 +675,10 @@ const Ledger = () => {
                         <button className="btn btn-secondary" onClick={handleCopyLastMonth}>
                             <Copy size={16} />
                             <span>复制上月</span>
+                        </button>
+                        <button className="btn btn-secondary btn-danger-outline" onClick={handleResetMonth}>
+                            <RotateCcw size={16} />
+                            <span>重置</span>
                         </button>
                         <div className="save-status-indicator">
                             {saveStatus === 'saving' && <span className="text-gold"><span className="spinner-small" /> 保存中...</span>}

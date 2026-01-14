@@ -377,6 +377,16 @@ body {
   background: var(--bg-primary);
 }
 
+.btn-secondary.btn-danger-outline {
+  color: var(--color-danger);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btn-secondary.btn-danger-outline:hover {
+  background: var(--color-danger-light);
+  border-color: var(--color-danger);
+}
+
 /* ================================= */
 /* 表单元素 */
 /* ================================= */

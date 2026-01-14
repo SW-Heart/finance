@@ -163,6 +163,18 @@ async def batch_upsert_records(db: AsyncSession, user_id: str, records: List[dic
         results.append(res)
     return results
 
+
+async def delete_monthly_records(db: AsyncSession, user_id: str, month: str):
+    """删除用户指定月份的所有资产记录"""
+    from sqlalchemy import delete
+    stmt = delete(MonthlyRecord).where(
+        (MonthlyRecord.user_id == user_id) &
+        (MonthlyRecord.record_date == month)
+    )
+    result = await db.execute(stmt)
+    await db.commit()
+    return result.rowcount
+
 async def seed_default_assets(db: AsyncSession):
     for default_asset in DEFAULT_ASSET_TYPES:
         result = await db.execute(select(AssetType).where(AssetType.id == default_asset["id"]))

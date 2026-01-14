@@ -84,3 +84,10 @@ async def batch_upsert(user_id: str, records: List[MonthlyRecordCreate], db: Asy
     data = [r.dict() for r in records]
     results = await assets.batch_upsert_records(db, user_id, data)
     return {"success": True, "count": len(results)}
+
+
+@router.delete("/records/month/{month}")
+async def delete_month_records(user_id: str, month: str, db: AsyncSession = Depends(get_db)):
+    """删除指定月份的所有记录（重置当月数据）"""
+    deleted_count = await assets.delete_monthly_records(db, user_id, month)
+    return {"success": True, "deleted": deleted_count}
