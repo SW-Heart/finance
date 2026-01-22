@@ -12,8 +12,10 @@
   "dependencies": {
     "date-fns": "^4.1.0",
     "lucide-react": "^0.562.0",
+    "markdown-it": "^14.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.12.0",
     "recharts": "^3.6.0"
   },

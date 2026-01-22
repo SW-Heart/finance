@@ -14,6 +14,7 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
 from routes.auth import router as auth_router
 from routes.assets import router as assets_router
 from routes.import_data import router as import_router
+from routes.ai_advisor import router as ai_router
 
 app = FastAPI(title="Finance Auth API", version="1.0.0")
 
@@ -32,6 +33,7 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/api/auth", tags=["认证"])
 app.include_router(assets_router, prefix="/api/assets", tags=["资产"])
 app.include_router(import_router, prefix="/api/import", tags=["导入"])
+app.include_router(ai_router, prefix="/api/ai", tags=["AI咨询"])
 
 
 @app.get("/")

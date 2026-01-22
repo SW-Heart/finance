@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
 import { useStats, getCurrentMonth } from '../data/useAssets';
 import { formatPercent } from '../data/calculations';
 import { ASSET_CATEGORIES } from '../data/models';
+import AIAdvisor from '../components/AIAdvisor';
 import './Portfolio.css';
 
 const Portfolio = () => {
@@ -196,6 +197,9 @@ const Portfolio = () => {
                     </table>
                 </div>
             )}
+
+            {/* AI 财务顾问 */}
+            <AIAdvisor />
         </div>
     );
 };
